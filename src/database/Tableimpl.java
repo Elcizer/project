@@ -1,16 +1,21 @@
 package database;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
 class Tableimpl implements Table{
     private String tableName;
-    private Column[] columns;
+    private Columnimpl[] columns;
 
-
-    public Tableimpl(String name,Column[] col)
+    public Tableimpl(String name,Columnimpl[] col)
     {
         tableName = name.substring(0,name.length()-4);
+        columns = col;
+    }
+    public Tableimpl(Columnimpl[] col)
+    {
         columns = col;
     }
     @Override
@@ -40,13 +45,39 @@ class Tableimpl implements Table{
 
     @Override
     public void show() {
-
+        for(Columnimpl c:columns) {
+            System.out.print(String.format("%"+c.length+"s | ",c.getHeader()));
+        }
+        System.out.println();
+        for(int i=0;i<columns[0].count();i++) {
+            for (Columnimpl c : columns) {
+                    System.out.print(String.format("%" + c.length + "s | ", c.getValue(i)));
+            }
+            System.out.println();
+        }
     }
 
     @Override
     public void describe() {
+        Columnimpl[] tempCol = new Columnimpl[4];
+        tempCol[0] = new Columnimpl("#");
+        tempCol[1] = new Columnimpl("Column");
+        tempCol[2] = new Columnimpl("Non-Null Count");
+        tempCol[3] = new Columnimpl("Dtype");
+        for(int i=0;i<columns.length;i++)
+            tempCol[0].setValue(i,i);
+        for(int i=0;i<columns.length;i++)
+            tempCol[1].setValue(i,columns[i].getHeader());
+        for(int i=0;i<columns.length;i++)
+            tempCol[2].setValue(i,columns[0].count()-columns[i].getNullCount()+" non-null");
+        for(int i=0;i<columns.length;i++) {
+            if(columns[i].checkString) tempCol[3].setValue(i,"String");
+                else tempCol[3].setValue(i,"Int");
+            }
+        Table tempT = new Tableimpl(tempCol);
+        tempT.show();
+        }
 
-    }
 
     @Override
     public Table head() {

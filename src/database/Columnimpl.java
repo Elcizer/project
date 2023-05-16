@@ -1,22 +1,32 @@
 package database;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class Columnimpl implements Column{
     private ArrayList list;
-    Columnimpl()
+    private String colName;
+    int length;
+    int nullCount;
+    boolean checkString;
+    Columnimpl(String name)
     {
-        list = new ArrayList<>();
+        list = new ArrayList<String>();
+        colName = name;
+        length = name.length();
+        nullCount = 0;
+        checkString = true;
     }
     @Override
     public String getHeader() {
-
-        return null;
+        return colName;
     }
 
     @Override
     public String getValue(int index) {
-        return null;
+        if (list.get(index)==null) return "null";
+        if(list.get(index) instanceof Integer)  return Integer.toString((int)list.get(index));
+        else return (String)list.get(index);
     }
 
     @Override
@@ -26,7 +36,22 @@ class Columnimpl implements Column{
 
     @Override
     public void setValue(int index, String value) {
-        list.add(index,value);
+        try{
+            System.out.println("try 진입");
+            if(value == null) {
+                System.out.println("null 확인");
+                list.add(index, null);
+                System.out.println("null 삽입");
+            }
+            else if(value.length()>length) length = value.length();
+            int tempInt = Integer.parseInt(value);
+            setValue(index,tempInt);
+        }
+        catch(NumberFormatException e)
+        {
+            System.out.println("catch 진입");
+            list.add(index,value);
+        }
     }
 
     @Override
@@ -36,7 +61,7 @@ class Columnimpl implements Column{
 
     @Override
     public int count() {
-        return 0;
+        return list.size();
     }
 
     @Override
@@ -51,6 +76,6 @@ class Columnimpl implements Column{
 
     @Override
     public long getNullCount() {
-        return 0;
+        return list.size()-nullCount;
     }
 }

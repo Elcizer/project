@@ -1,19 +1,24 @@
 package database;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class Database {
-    static int countTable = 0;
-    static ArrayList<Table> table = new ArrayList<>();
     // 테이블명이 같으면 같은 테이블로 간주된다.
+    private static final Set<Table> tables = new HashSet<>();
 
     // 테이블 이름 목록을 출력한다.
     public static void showTables() {
-        for(Table t:table)
+        Table []tempTables = new Table[tables.size()];
+        tables.toArray(tempTables);
+        for(Table e: tempTables)
         {
-            System.out.println(t.getName());
+            System.out.println(e.getName());
         }
+
     }
 
     /**
@@ -26,52 +31,49 @@ public class Database {
      *            컬럼의 데이터 타입은 int 아니면 String으로 판정한다.
      *            String 타입의 데이터는 ("), ('), (,)는 포함하지 않는 것으로 가정한다.
      */
-    public static void createTable(File csv) throws IOException,FileNotFoundException {
-        int count = 1;
+    public static void createTable(File csv) throws FileNotFoundException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(csv));
-        String[] tempStr = br.readLine().split(","); // 한 줄 받기
-        int rowNum = tempStr.length; // 열 개수 저장
-        Columnimpl[] tempColumn = new Columnimpl[rowNum]; // 열 개수만큼 Column 생성
-        for(int i=0;i<rowNum;i++) {
-            tempColumn[i] = new Columnimpl();
-           tempColumn[i].setValue(0, tempStr[i]);
-        }
-        // 여기까지하면 Column에 맨 위에있는 이름을 부여함
-        try
+        String[] oneLine = br.readLine().split(",");
+        int rowNum = oneLine.length;
+        int count = 0;
+        Columnimpl[] tempCol = new Columnimpl[rowNum];
+        for(int i=0;i<rowNum;i++)
         {
-            while(true)
-            {
-                tempStr = br.readLine().split(","); // 마지막 줄 다음줄 받을 때 NPE 발생
-                for(int i=0;i<rowNum;i++) // 행 개수만큼 입력
-                {
-                    if(tempStr.length<=i) {
-                        tempColumn[i].setValue(count, null);
+            tempCol[i] = new Columnimpl(oneLine[i]);
+        }
+        try {
+            while (true) {
+                oneLine = br.readLine().split(",");
+                for (int i = 0; i < rowNum; i++) { // rowNum = 6
+                    if(i >= oneLine.length) // length = 5
+                    {
+                        tempCol[i].setValue(count,null);
                     }
                     else
                     {
-                        tempColumn[i].setValue(count,tempStr[i]);
+                        tempCol[i].setValue(count,oneLine[i]);
                     }
                 }
-                count ++;
+                count++;
             }
         }
         catch(NullPointerException e)
         {
-
         }
         finally
         {
-            table.add(new Tableimpl(csv.getName(),tempColumn)); // table에 이름 부여, rowNum만큼 Column 객체 생성 -> 이거 나중에 고칠수도
+            tables.add(new Tableimpl(csv.getName(),tempCol));
         }
-      countTable++;
     }
 
     // tableName과 테이블명이 같은 테이블을 리턴한다. 없으면 null 리턴.
     public static Table getTable(String tableName) {
-        for(Table t : table)
+        Iterator iter = tables.iterator();
+        while(iter.hasNext())
         {
-            if(t.getName().equals(tableName))
-                return t;
+            Table temp = (Tableimpl)iter.next();
+            if(temp.getName().equals(tableName))
+                return temp;
         }
         return null;
     }

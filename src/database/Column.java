@@ -6,6 +6,7 @@ public interface Column {
     /* cell 값을 String으로 반환 */
     String getValue(int index);
 
+
     /**
      * @param index
      * @param t Double.class, Long.class, Integer.class

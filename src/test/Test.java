@@ -12,27 +12,27 @@ import java.util.List;
 public class Test {
     public static void main(String[] args) throws IOException {
 //        1) CSV 파일로부터 테이블 객체 생성
-        Database.createTable(new File("rsc/authors.csv"));
-        Database.createTable(new File("rsc/editors.csv"));
-        Database.createTable(new File("rsc/translators.csv"));
-        Database.createTable(new File("rsc/books.csv"));
+        //Database.createTable(new File("rsc/authors.csv"));
+        //Database.createTable(new File("rsc/editors.csv"));
+       // Database.createTable(new File("rsc/translators.csv"));
+       Database.createTable(new File("rsc/books.csv"));
 
 //        2) 데이터베이스의 테이블 목록을 출력
-        Database.showTables();
+      // Database.showTables();
 
 //        3) 데이터베이스로부터 테이블을 얻는다.
         Table books = Database.getTable("books");
-        Table authors = Database.getTable("authors");
-        Table editors = Database.getTable("editors");
-        Table translators = Database.getTable("translators");
+        //Table authors = Database.getTable("authors");
+        //Table editors = Database.getTable("editors");
+        //Table translators = Database.getTable("translators");
 
         Table testTable = books;
 
 //        4) 테이블 내용을 출력한다.
-//        testTable.show();
+        testTable.show();
 
 //        5) 테이블 요약 정보를 출력한다.
-//        testTable.describe();
+       testTable.describe();
 
         Table headTable;
 
