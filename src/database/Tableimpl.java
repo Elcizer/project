@@ -80,33 +80,86 @@ class Tableimpl implements Table{
 
 
     @Override
-    public Table head() {
-        return null;
+    public Table head()
+    {
+        return head(5);
     }
 
     @Override
-    public Table head(int lineCount) {
-        return null;
+    public Table head(int lineCount)
+    {
+        Columnimpl[] temp = newColumn();
+        lineCount = lineCount > columns[0].count() ? columns[0].count() : lineCount;
+        for(int i = 0;i<lineCount;i++)
+        {
+            for(int j = 0 ;j<columns.length;j++)
+            {
+                temp[j].setValue(i,columns[j].getValue(i));
+            }
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
     public Table tail() {
-        return null;
+        return tail(5);
     }
 
     @Override
-    public Table tail(int lineCount) {
-        return null;
+    public Table tail(int lineCount)
+    {
+        Columnimpl[] temp = newColumn();
+        int count = columns[0].count() - lineCount;
+        count = count > 0 ? count : 0;
+        for(int i = count; i < columns[0].count(); i++) // 행 개수
+        {
+            for(int j = 0 ;j <columns.length; j++) // 열 개수
+            {
+                temp[j].setValue(i-count,columns[j].getValue(i));
+            }
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
-    public Table selectRows(int beginIndex, int endIndex) {
-        return null;
+    public Table selectRows(int beginIndex, int endIndex)
+    {
+        Columnimpl[] temp = newColumn();
+        if(beginIndex < 0)
+        {
+            System.out.println("beginIndex 값이 가능한 값을 초과하여 "+ beginIndex+" -> "+0+" 으로 수정되었습니다.");
+            beginIndex = 0;
+        }
+        if(endIndex > columns[0].count())
+        {
+            System.out.println("endIndex 값이 정해진 값을 초과하여 "+ endIndex+" -> "+columns[0].count()+" 으로 수정되었습니다.");
+            endIndex = columns[0].count();
+        }
+        for(int i=beginIndex;i<endIndex;i++)
+        {
+            for(int j = 0 ;j <columns.length; j++) // 열 개수
+            {
+                temp[j].setValue(i,columns[j].getValue(i));
+            }
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
-    public Table selectRowsAt(int... indices) {
-        return null;
+    public Table selectRowsAt(int... indices)
+    {
+        int count = 0;
+        Columnimpl[] temp = newColumn();
+        for(int a : indices)
+        {
+            if(a<0 || a>columns[0].count()) {System.out.println(indices+": 존재하지 않는 index"); break;}
+            for(int i=0;i<columns.length;i++)
+            {
+                temp[i].setValue(count,columns[i].getValue(a));
+            }
+            count++;
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
@@ -147,5 +200,12 @@ class Tableimpl implements Table{
     @Override
     public Column getColumn(String name) {
         return null;
+    }
+    private Columnimpl[] newColumn()
+    {
+        Columnimpl[] temp = new Columnimpl[columns.length];
+        for(int i = 0;i<columns.length;i++)
+            temp[i] = new Columnimpl(columns[i].getHeader());
+        return temp;
     }
 }

@@ -53,6 +53,7 @@ class Columnimpl implements Column{
 
     @Override
     public void setValue(int index, int value) {
+        checkString = false;
         list.add(index,value);
     }
 
