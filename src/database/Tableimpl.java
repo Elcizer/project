@@ -93,9 +93,7 @@ class Tableimpl implements Table{
         for(int i = 0;i<lineCount;i++)
         {
             for(int j = 0 ;j<columns.length;j++)
-            {
                 temp[j].setValue(i,columns[j].getValue(i));
-            }
         }
         return new Tableimpl(temp);
     }
@@ -114,9 +112,7 @@ class Tableimpl implements Table{
         for(int i = count; i < columns[0].count(); i++) // 행 개수
         {
             for(int j = 0 ;j <columns.length; j++) // 열 개수
-            {
                 temp[j].setValue(i-count,columns[j].getValue(i));
-            }
         }
         return new Tableimpl(temp);
     }
@@ -138,9 +134,7 @@ class Tableimpl implements Table{
         for(int i=beginIndex;i<endIndex;i++)
         {
             for(int j = 0 ;j <columns.length; j++) // 열 개수
-            {
                 temp[j].setValue(i,columns[j].getValue(i));
-            }
         }
         return new Tableimpl(temp);
     }
@@ -154,9 +148,7 @@ class Tableimpl implements Table{
         {
             if(a<0 || a>columns[0].count()) {System.out.println(indices+": 존재하지 않는 index"); break;}
             for(int i=0;i<columns.length;i++)
-            {
                 temp[i].setValue(count,columns[i].getValue(a));
-            }
             count++;
         }
         return new Tableimpl(temp);
@@ -164,12 +156,45 @@ class Tableimpl implements Table{
 
     @Override
     public Table selectColumns(int beginIndex, int endIndex) {
-        return null;
+        if(beginIndex < 0)
+        {
+            System.out.println("beginIndex 값이 가능한 값을 초과하여 "+ beginIndex+" -> "+0+" 으로 수정되었습니다.");
+            beginIndex = 0;
+        }
+        if(endIndex > columns.length)
+        {
+            System.out.println("endIndex 값이 정해진 값을 초과하여 "+ endIndex+" -> "+columns.length+" 으로 수정되었습니다.");
+            endIndex = columns[0].count();
+        }
+        Columnimpl[] temp = new Columnimpl[endIndex-beginIndex];
+        int count = 0;
+        for(int i=beginIndex;i<endIndex;i++)
+        {
+            temp[count++] = new Columnimpl(columns[i].getHeader());
+        }
+        for(int i=0;i<columns[0].count();i++)
+        {
+            for(int j=beginIndex;j<endIndex;j++)
+            {
+                temp[j-beginIndex].setValue(i,columns[j].getValue(i));
+            }
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
     public Table selectColumnsAt(int... indices) {
-        return null;
+        Columnimpl[] temp = new Columnimpl[indices.length];
+        int count = 0;
+        for(int a : indices)
+        {
+            if(a<0 || a>columns.length) {System.out.println(indices+": 존재하지 않는 index"); break;}
+            temp[count] = new Columnimpl(columns[a].getHeader());
+            for(int i=0;i<columns[0].count();i++)
+                temp[count].setValue(i,columns[a].getValue(i));
+            count++;
+        }
+        return new Tableimpl(temp);
     }
 
     @Override
@@ -194,11 +219,15 @@ class Tableimpl implements Table{
 
     @Override
     public Column getColumn(int index) {
-        return null;
+        return columns[index];
     }
 
     @Override
     public Column getColumn(String name) {
+        for(Columnimpl c:columns)
+        {
+            if(name.equals(c.getHeader())) return c;
+        }
         return null;
     }
     private Columnimpl[] newColumn()
