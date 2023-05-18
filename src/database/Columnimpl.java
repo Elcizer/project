@@ -37,11 +37,9 @@ class Columnimpl implements Column{
     @Override
     public void setValue(int index, String value) {
         try{
-            System.out.println("try 진입");
             if(value == null) {
-                System.out.println("null 확인");
+                nullCount++;
                 list.add(index, null);
-                System.out.println("null 삽입");
             }
             else if(value.length()>length) length = value.length();
             int tempInt = Integer.parseInt(value);
@@ -49,7 +47,6 @@ class Columnimpl implements Column{
         }
         catch(NumberFormatException e)
         {
-            System.out.println("catch 진입");
             list.add(index,value);
         }
     }
@@ -76,6 +73,6 @@ class Columnimpl implements Column{
 
     @Override
     public long getNullCount() {
-        return list.size()-nullCount;
+        return nullCount;
     }
 }
