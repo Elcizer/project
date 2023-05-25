@@ -30,8 +30,22 @@ class Columnimpl implements Column{
     }
 
     @Override
-    public <T extends Number> T getValue(int index, Class<T> t) {
-        return null;
+    public <T extends Number> T getValue(int index, Class<T> t)
+    {
+        if(getValue(index)==null) {
+            System.out.println("해당값이 null이어서 대신 0을 반환합니다");
+            return t.cast(0);
+        }
+        try
+        {
+            int temp = Integer.parseInt(getValue(index));
+            return t.cast(temp);
+        }
+        catch(Exception e)
+        {
+            double temp = Double.parseDouble(getValue(index));
+            return t.cast(temp);
+        }
     }
 
     @Override
@@ -39,23 +53,30 @@ class Columnimpl implements Column{
         try{
             if(value == null) {
                 nullCount++;
-                list.add(index, null);
+                if(index<list.size())
+                    list.set(index,null);
+                else    list.add(index, null);
                 return;
             }
             else if(value.length()>length) length = value.length();
-            int tempInt = Integer.parseInt(value);
-            setValue(index,tempInt);
+            int tempInt = Integer.parseInt(value); // string 이 문자열이면 int로 변환하지 못해 NFE 발생 (String인 경우 Catch 문으로 이동)
+            setValue(index,tempInt); // int로 변환 가능하면 list.add 수행
         }
         catch(NumberFormatException e)
         {
-            list.add(index,value);
+            checkString = true;
+            if(index<list.size())
+                list.set(index,value);
+            else list.add(index,value);
         }
     }
 
     @Override
     public void setValue(int index, int value) {
         checkString = false;
-        list.add(index,value);
+        if(index<list.size())
+            list.set(index,value);
+        else list.add(index,value);
     }
 
     @Override
@@ -69,8 +90,18 @@ class Columnimpl implements Column{
     }
 
     @Override
-    public boolean isNumericColumn() {
-        return false;
+    public boolean isNumericColumn()
+    {
+        if(checkString)
+        {
+            for(Object s:list)
+            {
+                try {Double tempDouble = Double.parseDouble((String)s);}
+                catch(Exception e) {return false;}
+            }
+            return true;
+        }
+        else return true;
     }
 
     @Override

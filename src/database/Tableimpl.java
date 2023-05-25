@@ -389,10 +389,23 @@ class Tableimpl implements Table{
         Columnimpl[] temp = newColumn();
         for(int i=0;i<col.count();i++)
         {
-            if(predicate instanceof Integer)
-            if(predicate.test((T) col.getValue(i)))
+            try{
+            if(predicate.test((T)col.getValue(i)))
+                {
+                for(int j = 0 ;j<columns.length;j++)
+                    temp[j].setValue(count,columns[j].getValue(i));
+                count++;
+                }
+            }
+            catch(ClassCastException e)
             {
-
+                Integer tmpInt = Integer.parseInt(col.getValue(i));
+                if(predicate.test((T) tmpInt))
+                {
+                    for(int j = 0 ;j<columns.length;j++)
+                        temp[j].setValue(count,columns[j].getValue(i));
+                    count++;
+                }
             }
         }
         return new Tableimpl(temp);
