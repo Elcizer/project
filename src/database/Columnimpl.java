@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 class Columnimpl implements Column{
-    private ArrayList list;
-    private String colName;
+    ArrayList list;
+    String colName;
     int length;
     int nullCount;
     boolean checkString;
@@ -24,7 +24,7 @@ class Columnimpl implements Column{
 
     @Override
     public String getValue(int index) {
-        if (list.get(index)==null) return "null";
+        if (list.get(index)==null) return null;
         if(list.get(index) instanceof Integer)  return Integer.toString((int)list.get(index));
         else return (String)list.get(index);
     }
@@ -40,6 +40,7 @@ class Columnimpl implements Column{
             if(value == null) {
                 nullCount++;
                 list.add(index, null);
+                return;
             }
             else if(value.length()>length) length = value.length();
             int tempInt = Integer.parseInt(value);

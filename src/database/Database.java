@@ -1,10 +1,7 @@
 package database;
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Database {
     // 테이블명이 같으면 같은 테이블로 간주된다.
@@ -83,6 +80,68 @@ public class Database {
      * @param byIndexOfColumn 정렬 기준 컬럼, 존재하지 않는 컬럼 인덱스 전달시 예외 발생시켜도 됨.
      */
     public static Table sort(Table table, int byIndexOfColumn, boolean isAscending, boolean isNullFirst) {
-        return null;
+        if(byIndexOfColumn>=table.getColumnCount())
+        {
+            System.out.println("존재하지 않는 index입니다 null을 반환합니다.");
+            return null;
+        }
+        Columnimpl col = (Columnimpl)table.getColumn(byIndexOfColumn);
+        ArrayList a = new ArrayList(col.list);
+        if (isAscending) {
+            if (isNullFirst) a.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
+            else a.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+        } else {
+            if (isNullFirst) a.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
+            else a.sort(Comparator.nullsLast(Comparator.reverseOrder()));
+        }
+        boolean[] check = new boolean[col.count()];
+        Columnimpl[] temp = new Columnimpl[table.getColumnCount()];
+        for(int i = 0;i<table.getColumnCount();i++)
+            temp[i] = new Columnimpl(table.getColumn(i).getHeader());
+        int count = 0;
+        for(var b : a)
+        {
+            for(int i=0;i<table.getRowCount();i++)
+            {
+                if(b==null)
+                {
+                    if(col.getValue(i)==null&&!(check[i])){
+                        check[i] = true;
+                        for (int j = 0; j < table.getColumnCount(); j++) {
+                            temp[j].setValue(count, table.getColumn(j).getValue(i));
+                        }
+                        count++;
+                        break;
+                    }
+                }
+                else if(col.checkString)
+                {
+                    if(b.equals(col.getValue(i)))
+                    {
+                        check[i]= true;
+                        for(int j=0;j< table.getColumnCount();j++)
+                        {
+                            temp[j].setValue(count,table.getColumn(j).getValue(i));
+                        }
+                        count++;
+                        break;
+                    }
+                }
+                else
+                {
+                    if(b.toString().equals(col.getValue(i)))
+                    {
+                        check[i]= true;
+                        for(int j=0;j<table.getColumnCount();j++)
+                        {
+                            temp[j].setValue(count,table.getColumn(j).getValue(i));
+                        }
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+        return new Tableimpl(temp);
     }
 }

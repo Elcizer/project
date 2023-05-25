@@ -12,9 +12,9 @@ import java.util.List;
 public class Test {
     public static void main(String[] args) throws IOException {
 //        1) CSV 파일로부터 테이블 객체 생성
-        //Database.createTable(new File("rsc/authors.csv"));
-        //Database.createTable(new File("rsc/editors.csv"));
-       // Database.createTable(new File("rsc/translators.csv"));
+        Database.createTable(new File("rsc/authors.csv"));
+        Database.createTable(new File("rsc/editors.csv"));
+        Database.createTable(new File("rsc/translators.csv"));
        Database.createTable(new File("rsc/books.csv"));
 
 //        2) 데이터베이스의 테이블 목록을 출력
@@ -22,9 +22,9 @@ public class Test {
 
 //        3) 데이터베이스로부터 테이블을 얻는다.
         Table books = Database.getTable("books");
-        //Table authors = Database.getTable("authors");
-        //Table editors = Database.getTable("editors");
-        //Table translators = Database.getTable("translators");
+        Table authors = Database.getTable("authors");
+        Table editors = Database.getTable("editors");
+        Table translators = Database.getTable("translators");
 
         Table testTable = books;
 
@@ -42,7 +42,7 @@ public class Test {
         System.out.println("identity test for head(): " + (testTable.equals(headTable) ? "Fail" : "Pass"));*/
 
 //        6) 지정한 처음 n줄 출력 (새 테이블)
-        /*testTable.head(10).show();
+       /* testTable.head(10).show();
         headTable = testTable.head(10);
         System.out.println("identity test for head(n): " + (testTable.equals(headTable) ? "Fail" : "Pass"));*/
 
@@ -73,14 +73,14 @@ public class Test {
         Table selectedColumnsTable;
 
 //        11) 지정한 열 인덱스 범위(begin<=, <end)의 서브테이블을 얻는다. (새 테이블), 존재하지 않는 열 인덱시 전달시 예외발생해도 됨.
-        /*testTable.selectColumns(0, 4).show();
-        selectedColumnsTable = testTable.selectColumns(0, 4);
-        System.out.println("identity test for selectColumns(range): " + (testTable.equals(selectedColumnsTable) ? "Fail" : "Pass"));*/
+//        testTable.selectColumns(0, 4).show();
+//        selectedColumnsTable = testTable.selectColumns(0, 4);
+//        System.out.println("identity test for selectColumns(range): " + (testTable.equals(selectedColumnsTable) ? "Fail" : "Pass"));
 
 //        12) 지정한 열 인덱스로만 구성된 서브테이블을 얻는다. (새 테이블), 존재하지 않는 열 인덱시 전달시 예외발생해도 됨.
-        testTable.selectColumnsAt(4, 5, 3).show();
-        selectedColumnsTable = testTable.selectColumnsAt(4, 5, 3);
-        System.out.println("identity test for selectColumnsAt(indices): " + (testTable.equals(selectedColumnsTable) ? "Fail" : "Pass"));
+//        testTable.selectColumnsAt(4, 5, 3).show();
+//        selectedColumnsTable = testTable.selectColumnsAt(4, 5, 3);
+//        System.out.println("identity test for selectColumnsAt(indices): " + (testTable.equals(selectedColumnsTable) ? "Fail" : "Pass"));
 
         Table sortedTable;
 
@@ -94,17 +94,17 @@ public class Test {
 //        sortedTable = Database.sort(testTable, 5, false, true);
 //        System.out.println("identity test for Database.sort(index, asc, nullOrder): " + (testTable.equals(sortedTable) ? "Fail" : "Pass"));
 
-      //  Table rightTable = authors;
+        Table rightTable = authors;
 
 //        15) cross join
 //        Table crossJoined = testTable.crossJoin(rightTable);
 //        crossJoined.show();
 
 //        16) inner join
-//        Table innerJoined = testTable.innerJoin(rightTable, List.of(new JoinColumn("author_id", "id")));
+//        Table innerJoined = testTable.innerJoin(authors, List.of(new JoinColumn("author_id", "id")));
 //        innerJoined.show();
 
-     //   rightTable = translators;
+        rightTable = translators;
 
 //        17) outer join
 //        Table outerJoined = testTable.outerJoin(rightTable, List.of(new JoinColumn("translator_id", "id")));
@@ -115,10 +115,10 @@ public class Test {
 //        fullOuterJoined.show();
 
 //        19) 조건식을 만족하는 행을 얻는다.
-//        testTable.selectRowsBy("title", (String x) -> x.contains("Your")).show();
-//        testTable.selectRowsBy("author_id", (Integer x) -> x < 15).show();
-//        testTable.selectRowsBy("title", (String x) -> x.length() < 8).show();
-//        testTable.selectRowsBy("translator_id", (Object x) -> x == null).show();
+        testTable.selectRowsBy("title", (String x) -> x.contains("Your")).show();
+        testTable.selectRowsBy("author_id", (Integer x) -> x < 15).show();
+        testTable.selectRowsBy("title", (String x) -> x.length() < 8).show();
+        testTable.selectRowsBy("translator_id", (Object x) -> x == null).show();
 //
 //        ****************************** test for Column ******************************
         int selectedColumnIndex;
