@@ -3,27 +3,46 @@ package database;
 import java.util.*;
 import java.util.function.Predicate;
 
-class Tableimpl implements Table{
+class TableImpl implements Table{
     private String tableName;
-    private Columnimpl[] columns;
+    private ColumnImpl[] columns;
 
-    public Tableimpl(String name,Columnimpl[] col)
+    @Override
+    public String toString() {
+        return "<database.Table@"+Integer.toHexString(hashCode())+">";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TableImpl tableimpl = (TableImpl) o;
+        return Objects.equals(tableName, tableimpl.tableName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(tableName);
+        return result;
+    }
+
+    TableImpl(String name, ColumnImpl[] col)
     {
         tableName = name.substring(0,name.length()-4);
         columns = col;
     }
-    public Tableimpl(Columnimpl[] col)
+     TableImpl(ColumnImpl[] col)
     {
         columns = col;
     }
     @Override
     public Table crossJoin(Table rightTable) {
-        Columnimpl[] temp = new Columnimpl[this.getColumnCount()+rightTable.getColumnCount()];
+        ColumnImpl[] temp = new ColumnImpl[this.getColumnCount()+rightTable.getColumnCount()];
         int count = 0;
         for(int i=0;i<this.getColumnCount();i++)
-            temp[count++] = new Columnimpl(this.getName()+"."+this.getColumn(i).getHeader());
+            temp[count++] = new ColumnImpl(this.getName()+"."+this.getColumn(i).getHeader());
         for(int i=0;i< rightTable.getColumnCount();i++)
-            temp[count++] = new Columnimpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
+            temp[count++] = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
         int rowCount = 0;
         int columnCount;
         for(int i=0;i<this.getRowCount();i++) // leftTable 행 for 문
@@ -38,17 +57,17 @@ class Tableimpl implements Table{
                     rowCount++;
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table innerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        Columnimpl[] temp = new Columnimpl[this.getColumnCount()+rightTable.getColumnCount()];
+        ColumnImpl[] temp = new ColumnImpl[this.getColumnCount()+rightTable.getColumnCount()];
         int count = 0;
         for(int i=0;i<this.getColumnCount();i++)
-            temp[count++] = new Columnimpl(this.getName()+"."+this.getColumn(i).getHeader());
+            temp[count++] = new ColumnImpl(this.getName()+"."+this.getColumn(i).getHeader());
         for(int i=0;i< rightTable.getColumnCount();i++)
-            temp[count++] = new Columnimpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
+            temp[count++] = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
         int rowCount = 0;
         int columnCount;
         for(int i=0;i<this.getRowCount();i++) // leftTable 행 for 문
@@ -58,8 +77,8 @@ class Tableimpl implements Table{
                 boolean check = true;
                 for(JoinColumn join : joinColumns)
                 {
-                    Columnimpl col1 = (Columnimpl) this.getColumn(join.getColumnOfThisTable());
-                    Columnimpl col2 = (Columnimpl) rightTable.getColumn(join.getColumnOfAnotherTable());
+                    ColumnImpl col1 = (ColumnImpl) this.getColumn(join.getColumnOfThisTable());
+                    ColumnImpl col2 = (ColumnImpl) rightTable.getColumn(join.getColumnOfAnotherTable());
 
                     if(col1.getValue(i)==null || col2.getValue(j)==null) // 비교 값에 null 이 존재할 때
                     {
@@ -83,17 +102,17 @@ class Tableimpl implements Table{
                 rowCount++;
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table outerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        Columnimpl[] temp = new Columnimpl[this.getColumnCount()+rightTable.getColumnCount()];
+        ColumnImpl[] temp = new ColumnImpl[this.getColumnCount()+rightTable.getColumnCount()];
         int count = 0;
         for(int i=0;i<this.getColumnCount();i++)
-            temp[count++] = new Columnimpl(this.getName()+"."+this.getColumn(i).getHeader());
+            temp[count++] = new ColumnImpl(this.getName()+"."+this.getColumn(i).getHeader());
         for(int i=0;i< rightTable.getColumnCount();i++)
-            temp[count++] = new Columnimpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
+            temp[count++] = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
         int rowCount = 0;
         int columnCount;
         boolean[] checkOuterL = new boolean[this.getRowCount()];
@@ -104,8 +123,8 @@ class Tableimpl implements Table{
                 boolean check = true;
                 for(JoinColumn join : joinColumns)
                 {
-                    Columnimpl col1 = (Columnimpl) this.getColumn(join.getColumnOfThisTable());
-                    Columnimpl col2 = (Columnimpl) rightTable.getColumn(join.getColumnOfAnotherTable());
+                    ColumnImpl col1 = (ColumnImpl) this.getColumn(join.getColumnOfThisTable());
+                    ColumnImpl col2 = (ColumnImpl) rightTable.getColumn(join.getColumnOfAnotherTable());
 
                     if(col1.getValue(i)==null || col2.getValue(j)==null) // 비교 값에 null 이 존재할 때
                     {
@@ -143,17 +162,17 @@ class Tableimpl implements Table{
                 rowCount++;
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table fullOuterJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        Columnimpl[] temp = new Columnimpl[this.getColumnCount()+rightTable.getColumnCount()];
+        ColumnImpl[] temp = new ColumnImpl[this.getColumnCount()+rightTable.getColumnCount()];
         int count = 0;
         for(int i=0;i<this.getColumnCount();i++)
-            temp[count++] = new Columnimpl(this.getName()+"."+this.getColumn(i).getHeader());
+            temp[count++] = new ColumnImpl(this.getName()+"."+this.getColumn(i).getHeader());
         for(int i=0;i< rightTable.getColumnCount();i++)
-            temp[count++] = new Columnimpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
+            temp[count++] = new ColumnImpl(rightTable.getName()+"."+rightTable.getColumn(i).getHeader()); // header 초기화
         int rowCount = 0;
         int columnCount;
         boolean[] checkOuterL = new boolean[this.getRowCount()];
@@ -165,8 +184,8 @@ class Tableimpl implements Table{
                 boolean check = true;
                 for(JoinColumn join : joinColumns)
                 {
-                    Columnimpl col1 = (Columnimpl) this.getColumn(join.getColumnOfThisTable());
-                    Columnimpl col2 = (Columnimpl) rightTable.getColumn(join.getColumnOfAnotherTable());
+                    ColumnImpl col1 = (ColumnImpl) this.getColumn(join.getColumnOfThisTable());
+                    ColumnImpl col2 = (ColumnImpl) rightTable.getColumn(join.getColumnOfAnotherTable());
 
                     if(col1.getValue(i)==null || col2.getValue(j)==null) // 비교 값에 null 이 존재할 때
                     {
@@ -219,7 +238,7 @@ class Tableimpl implements Table{
                 rowCount++;
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
@@ -229,12 +248,12 @@ class Tableimpl implements Table{
 
     @Override
     public void show() {
-        for(Columnimpl c:columns) {
+        for(ColumnImpl c:columns) {
             System.out.print(String.format("%"+c.length+"s | ",c.getHeader()));
         }
         System.out.println();
         for(int i=0;i<columns[0].count();i++) {
-            for (Columnimpl c : columns) {
+            for (ColumnImpl c : columns) {
                     System.out.print(String.format("%" + c.length + "s | ", c.getValue(i)));
             }
             System.out.println();
@@ -243,11 +262,16 @@ class Tableimpl implements Table{
 
     @Override
     public void describe() {
-        Columnimpl[] tempCol = new Columnimpl[4];
-        tempCol[0] = new Columnimpl("#");
-        tempCol[1] = new Columnimpl("Column");
-        tempCol[2] = new Columnimpl("Non-Null Count");
-        tempCol[3] = new Columnimpl("Dtype");
+        int countInt = 0;
+        int countString = 0;
+        System.out.println(this);
+        System.out.println("RangeIndex: "+getRowCount()+" entries, 0 to "+(getRowCount()-1));
+        System.out.println("Data columns (total "+getColumnCount()+" columns):");
+        ColumnImpl[] tempCol = new ColumnImpl[4];
+        tempCol[0] = new ColumnImpl("#");
+        tempCol[1] = new ColumnImpl("Column");
+        tempCol[2] = new ColumnImpl("Non-Null Count");
+        tempCol[3] = new ColumnImpl("Dtype");
         for(int i=0;i<columns.length;i++)
             tempCol[0].setValue(i,i);
         for(int i=0;i<columns.length;i++)
@@ -255,11 +279,20 @@ class Tableimpl implements Table{
         for(int i=0;i<columns.length;i++)
             tempCol[2].setValue(i,columns[0].count()-columns[i].getNullCount()+" non-null");
         for(int i=0;i<columns.length;i++) {
-            if(columns[i].checkString) tempCol[3].setValue(i,"String");
-                else tempCol[3].setValue(i,"Int");
+            if(columns[i].checkString)
+                {
+                tempCol[3].setValue(i,"String");
+                countString++;
+                }
+                else
+                {
+                tempCol[3].setValue(i,"int");
+                countInt++;
+                }
             }
-        Table tempT = new Tableimpl(tempCol);
+        Table tempT = new TableImpl(tempCol);
         tempT.show();
+        System.out.println("dtypes: int("+countInt+"), String("+countString+")");
         }
 
 
@@ -272,14 +305,14 @@ class Tableimpl implements Table{
     @Override
     public Table head(int lineCount)
     {
-        Columnimpl[] temp = newColumn();
+        ColumnImpl[] temp = newColumn();
         lineCount = lineCount > columns[0].count() ? columns[0].count() : lineCount;
         for(int i = 0;i<lineCount;i++)
         {
             for(int j = 0 ;j<columns.length;j++)
                 temp[j].setValue(i,columns[j].getValue(i));
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
@@ -290,7 +323,7 @@ class Tableimpl implements Table{
     @Override
     public Table tail(int lineCount)
     {
-        Columnimpl[] temp = newColumn();
+        ColumnImpl[] temp = newColumn();
         int count = columns[0].count() - lineCount;
         count = count > 0 ? count : 0;
         for(int i = count; i < columns[0].count(); i++) // 행 개수
@@ -298,13 +331,13 @@ class Tableimpl implements Table{
             for(int j = 0 ;j <columns.length; j++) // 열 개수
                 temp[j].setValue(i-count,columns[j].getValue(i));
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table selectRows(int beginIndex, int endIndex)
     {
-        Columnimpl[] temp = newColumn();
+        ColumnImpl[] temp = newColumn();
         if(beginIndex < 0)
         {
             System.out.println("beginIndex 값이 가능한 값을 초과하여 "+ beginIndex+" -> "+0+" 으로 수정되었습니다.");
@@ -320,22 +353,22 @@ class Tableimpl implements Table{
             for(int j = 0 ;j <columns.length; j++) // 열 개수
                 temp[j].setValue(i,columns[j].getValue(i));
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table selectRowsAt(int... indices)
     {
         int count = 0;
-        Columnimpl[] temp = newColumn();
+        ColumnImpl[] temp = newColumn();
         for(int a : indices)
         {
-            if(a<0 || a>columns[0].count()) {System.out.println(indices+": 존재하지 않는 index"); break;}
+            if(a<0 || a>columns[0].count()) {System.out.println(a+": 존재하지 않는 index"); continue;}
             for(int i=0;i<columns.length;i++)
                 temp[i].setValue(count,columns[i].getValue(a));
             count++;
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
@@ -350,11 +383,11 @@ class Tableimpl implements Table{
             System.out.println("endIndex 값이 정해진 값을 초과하여 "+ endIndex+" -> "+columns.length+" 으로 수정되었습니다.");
             endIndex = columns[0].count();
         }
-        Columnimpl[] temp = new Columnimpl[endIndex-beginIndex];
+        ColumnImpl[] temp = new ColumnImpl[endIndex-beginIndex];
         int count = 0;
         for(int i=beginIndex;i<endIndex;i++)
         {
-            temp[count++] = new Columnimpl(columns[i].getHeader());
+            temp[count++] = new ColumnImpl(columns[i].getHeader());
         }
         for(int i=0;i<columns[0].count();i++)
         {
@@ -363,30 +396,30 @@ class Tableimpl implements Table{
                 temp[j-beginIndex].setValue(i,columns[j].getValue(i));
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
     public Table selectColumnsAt(int... indices) {
-        Columnimpl[] temp = new Columnimpl[indices.length];
+        ColumnImpl[] temp = new ColumnImpl[indices.length];
         int count = 0;
         for(int a : indices)
         {
             if(a<0 || a>columns.length) {System.out.println(indices+": 존재하지 않는 index"); break;}
-            temp[count] = new Columnimpl(columns[a].getHeader());
+            temp[count] = new ColumnImpl(columns[a].getHeader());
             for(int i=0;i<columns[0].count();i++)
                 temp[count].setValue(i,columns[a].getValue(i));
             count++;
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
         public <T> Table selectRowsBy(String columnName, Predicate<T> predicate)
     {
         int count = 0;
-        Columnimpl col = (Columnimpl) this.getColumn(columnName);
-        Columnimpl[] temp = newColumn();
+        ColumnImpl col = (ColumnImpl) this.getColumn(columnName);
+        ColumnImpl[] temp = newColumn();
         for(int i=0;i<col.count();i++)
         {
             try{
@@ -408,7 +441,7 @@ class Tableimpl implements Table{
                 }
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 
     @Override
@@ -419,7 +452,7 @@ class Tableimpl implements Table{
             System.out.println("존재하지 않는 index입니다 원본 Table을 반환합니다.");
             return this;
         }
-        Columnimpl col = columns[byIndexOfColumn];
+        ColumnImpl col = columns[byIndexOfColumn];
         ArrayList a = new ArrayList(columns[byIndexOfColumn].list);
             if (isAscending) {
                 if (isNullFirst) a.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
@@ -429,7 +462,7 @@ class Tableimpl implements Table{
                 else a.sort(Comparator.nullsLast(Comparator.reverseOrder()));
             }
         boolean[] check = new boolean[columns[0].count()];
-        Columnimpl[] temp = newColumn();
+        ColumnImpl[] temp = newColumn();
         int count = 0;
         for(var b : a)
         {
@@ -495,17 +528,17 @@ class Tableimpl implements Table{
 
     @Override
     public Column getColumn(String name) {
-        for(Columnimpl c:columns)
+        for(ColumnImpl c:columns)
         {
             if(name.equals(c.getHeader())) return c;
         }
         return null;
     }
-    Columnimpl[] newColumn()
+    ColumnImpl[] newColumn()
     {
-        Columnimpl[] temp = new Columnimpl[columns.length];
+        ColumnImpl[] temp = new ColumnImpl[columns.length];
         for(int i = 0;i<columns.length;i++)
-            temp[i] = new Columnimpl(columns[i].getHeader());
+            temp[i] = new ColumnImpl(columns[i].getHeader());
         return temp;
     }
 }

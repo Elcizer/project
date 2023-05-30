@@ -1,21 +1,20 @@
 package database;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-class Columnimpl implements Column{
+class ColumnImpl implements Column{
     ArrayList list;
     String colName;
     int length;
     int nullCount;
     boolean checkString;
-    Columnimpl(String name)
+    ColumnImpl(String name)
     {
         list = new ArrayList<String>();
         colName = name;
         length = name.length();
         nullCount = 0;
-        checkString = true;
+        checkString = false;
     }
     @Override
     public String getHeader() {
@@ -32,10 +31,6 @@ class Columnimpl implements Column{
     @Override
     public <T extends Number> T getValue(int index, Class<T> t)
     {
-        if(getValue(index)==null) {
-            System.out.println("해당값이 null이어서 대신 0을 반환합니다");
-            return t.cast(0);
-        }
         try
         {
             int temp = Integer.parseInt(getValue(index));
@@ -73,7 +68,6 @@ class Columnimpl implements Column{
 
     @Override
     public void setValue(int index, int value) {
-        checkString = false;
         if(index<list.size())
             list.set(index,value);
         else list.add(index,value);

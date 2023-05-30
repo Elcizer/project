@@ -7,6 +7,7 @@ public class Database {
     // 테이블명이 같으면 같은 테이블로 간주된다.
     private static final Set<Table> tables = new HashSet<>();
 
+
     // 테이블 이름 목록을 출력한다.
     public static void showTables() {
         Table []tempTables = new Table[tables.size()];
@@ -33,10 +34,10 @@ public class Database {
         String[] oneLine = br.readLine().split(",");
         int rowNum = oneLine.length;
         int count = 0;
-        Columnimpl[] tempCol = new Columnimpl[rowNum];
+        ColumnImpl[] tempCol = new ColumnImpl[rowNum];
         for(int i=0;i<rowNum;i++)
         {
-            tempCol[i] = new Columnimpl(oneLine[i]);
+            tempCol[i] = new ColumnImpl(oneLine[i]);
         }
         try {
             while (true) {
@@ -59,7 +60,7 @@ public class Database {
         }
         finally
         {
-            tables.add(new Tableimpl(csv.getName(),tempCol));
+            tables.add(new TableImpl(csv.getName(),tempCol));
         }
     }
 
@@ -68,7 +69,7 @@ public class Database {
         Iterator iter = tables.iterator();
         while(iter.hasNext())
         {
-            Table temp = (Tableimpl)iter.next();
+            Table temp = (TableImpl)iter.next();
             if(temp.getName().equals(tableName))
                 return temp;
         }
@@ -85,7 +86,7 @@ public class Database {
             System.out.println("존재하지 않는 index입니다 null을 반환합니다.");
             return null;
         }
-        Columnimpl col = (Columnimpl)table.getColumn(byIndexOfColumn);
+        ColumnImpl col = (ColumnImpl)table.getColumn(byIndexOfColumn);
         ArrayList a = new ArrayList(col.list);
         if (isAscending) {
             if (isNullFirst) a.sort(Comparator.nullsFirst(Comparator.naturalOrder()));
@@ -95,9 +96,9 @@ public class Database {
             else a.sort(Comparator.nullsLast(Comparator.reverseOrder()));
         }
         boolean[] check = new boolean[col.count()];
-        Columnimpl[] temp = new Columnimpl[table.getColumnCount()];
+        ColumnImpl[] temp = new ColumnImpl[table.getColumnCount()];
         for(int i = 0;i<table.getColumnCount();i++)
-            temp[i] = new Columnimpl(table.getColumn(i).getHeader());
+            temp[i] = new ColumnImpl(table.getColumn(i).getHeader());
         int count = 0;
         for(var b : a)
         {
@@ -142,6 +143,6 @@ public class Database {
                 }
             }
         }
-        return new Tableimpl(temp);
+        return new TableImpl(temp);
     }
 }
